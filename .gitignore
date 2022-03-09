@@ -3,6 +3,8 @@
 *.pro.user*
 build*
 build-*
+install*
+log*
 *.o
 *.so
 *.a
