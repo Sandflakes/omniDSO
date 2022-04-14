@@ -1,7 +1,7 @@
-SET(PROJECT_NAME DSO)
+SET(PROJECT_NAME OMNIDSO)
 
 PROJECT(${PROJECT_NAME})
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
@@ -14,7 +14,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # required libraries
 find_package(SuiteParse REQUIRED)
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 REQUIRED NO_MODULE)
 find_package(Boost COMPONENTS system thread) 
 
 # optional libraries
@@ -53,6 +53,7 @@ set(dso_SOURCE_FILES
   ${PROJECT_SOURCE_DIR}/src/util/settings.cpp
   ${PROJECT_SOURCE_DIR}/src/util/Undistort.cpp
   ${PROJECT_SOURCE_DIR}/src/util/globalCalib.cpp
+  ${PROJECT_SOURCE_DIR}/src/util/webcamReader.cpp
 )
 
 
@@ -130,3 +131,11 @@ else()
 	message("--- not building dso_dataset, since either don't have openCV or Pangolin.")
 endif()
 
+# build omni main executable (only if we have both OpenCV)
+if (OpenCV_FOUND)
+	message("--- compiling omniDSO.")
+	add_executable(dso_omni ${PROJECT_SOURCE_DIR}/src/main_dso_omni.cpp )
+    target_link_libraries(dso_omni dso boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS})
+else()
+	message("--- not building omniDSO, since it does not have openCV.")
+endif()
