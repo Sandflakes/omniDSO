@@ -24,12 +24,18 @@ namespace dso
         int width, height;
         int widthOrg, heightOrg;
 
+
+        ImageAndExposure* getImage_internal();
+
     public:
+        Undistort *undistort;
+
         WebcamReader(string calibPath, int videoID);
         ~WebcamReader();
 
+        void setGlobalCalibration();
+        ImageAndExposure* getImage();
         void getCalibMono(Eigen::Matrix3f &K, int &w, int &h);
-        ImageAndExposure* getImage_internal();
-        Undistort *undistort;
+        float* getPhotometricGamma();
     };
 }

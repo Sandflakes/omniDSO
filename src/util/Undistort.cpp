@@ -813,6 +813,7 @@ namespace dso
             parsOrg[3] = parsOrg[3] * hOrg - 0.5;
         }
 
+        std::cout << "l3=" << l3 << std::endl;
         // l3
         if (l3 == "crop")
         {

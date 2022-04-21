@@ -1,9 +1,11 @@
-#pragma once
 #include <sstream>
 #include <fstream>
 #include <dirent.h>
 #include <algorithm>
 
+#include "util/settings.h"
+#include "util/globalFuncs.h"
+#include "util/globalCalib.h"
 #include "util/webcamReader.h"
 
 namespace dso
@@ -32,13 +34,33 @@ namespace dso
         w = undistort->getSize()[0];
         h = undistort->getSize()[1];
     }
-
+    
     ImageAndExposure* WebcamReader::getImage_internal()
     {
         MinimalImageB *minimg = IOWrap::readWebcamBW_8U(&this->webcam);
-        ImageAndExposure *ret2 = this->undistort->undistort<unsigned char>( minimg, 0, 0);
+        ImageAndExposure *ret2 = this->undistort->undistort<unsigned char>( minimg, 1, 0);
         delete minimg;
         return ret2;
+    }
+
+    ImageAndExposure* WebcamReader::getImage()
+    {
+        return getImage_internal();
+    }
+
+    float* WebcamReader::getPhotometricGamma()
+    {
+        if (undistort == 0 || undistort->photometricUndist == 0)
+            return 0;
+        return undistort->photometricUndist->getG();
+    }
+
+    void WebcamReader::setGlobalCalibration()
+    {
+        int w_out, h_out;
+        Eigen::Matrix3f K;
+        getCalibMono(K, w_out, h_out);
+        setGlobalCalib(w_out, h_out, K);
     }
 
     WebcamReader::~WebcamReader()
