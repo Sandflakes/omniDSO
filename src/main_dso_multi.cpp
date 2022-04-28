@@ -36,6 +36,7 @@
 #include "util/globalFuncs.h"
 #include "util/globalCalib.h"
 #include "util/webcamReader.h"
+#include "util/datasetReaderCV.h"
 
 #include "util/NumType.h"
 #include "FullSystem/FullSystem.h"
@@ -43,6 +44,7 @@
 #include "FullSystem/PixelSelector2.h"
 
 #include "IOWrapper/Pangolin/PangolinDSOViewer.h"
+#include "IOWrapper/OutputWrapper/multiOutputWrapper.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
 
 std::string vignette = "";
@@ -321,7 +323,8 @@ int main(int argc, char **argv)
     boost::thread exThread = boost::thread(exitThread);
 
     // WebcamReader *reader = new ImageFolderReader(source, calib, gammaCalib, vignette);
-    WebcamReader *reader = new WebcamReader(calib, videoID);
+    // WebcamReader *reader = new WebcamReader(calib, videoID);
+    DatasetReaderCV *reader = new DatasetReaderCV(calib, "/home/sandflakes/Pictures/Dataset/00/image_0/*.png");
     reader->setGlobalCalibration();
 
     if (setting_photometricCalibration > 0 && reader->getPhotometricGamma() == 0)
@@ -332,7 +335,7 @@ int main(int argc, char **argv)
 
     int linc = 1;
 
-    FullSystem *fullSystem = new FullSystem();
+    FullSystem *fullSystem = new FullSystem(0);
     fullSystem->setGammaFunction(reader->getPhotometricGamma());
     fullSystem->linearizeOperation = true;
 
@@ -342,6 +345,8 @@ int main(int argc, char **argv)
         viewer = new IOWrap::PangolinDSOViewer(wG[0], hG[0], false);
         fullSystem->outputWrapper.push_back(viewer);
     }
+
+    fullSystem->outputWrapper.push_back(new IOWrap::MultiOutputWrapper());
 
     if (useSampleOutput)
         fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
@@ -365,6 +370,9 @@ int main(int argc, char **argv)
             ImageAndExposure *img;
             img = reader->getImage();
 
+            if(img == NULL)
+                break;
+
             fullSystem->addActiveFrame(img, frameCounter);
 
             delete img;
@@ -381,7 +389,7 @@ int main(int argc, char **argv)
                     for (IOWrap::Output3DWrapper *ow : wraps)
                         ow->reset();
 
-                    fullSystem = new FullSystem();
+                    fullSystem = new FullSystem(0);
                     fullSystem->setGammaFunction(reader->getPhotometricGamma());
                     fullSystem->linearizeOperation = true;
 
@@ -393,11 +401,11 @@ int main(int argc, char **argv)
                 }
             }
             
-            IOWrap::Output3DWrapper* outputWrapper = fullSystem->outputWrapper.back();
+            if(fullSystem->initFailed)
+                printf("Init Failed\n");
 
-            outputWrapper->
-
-            // fprintf("", outputWrapper);
+            // if(fullSystem->initialized)
+            //     printf("Initialized\n");
 
             if (fullSystem->isLost)
             {
@@ -415,8 +423,8 @@ int main(int argc, char **argv)
         fullSystem->printResult("result.txt");
 
         int numFramesProcessed = frameCounter;
-        double MilliSecondsTakenSingle = 1000.0f * (ended - started) / (float)(CLOCKS_PER_SEC);
-        double numSecondsProcessed = MilliSecondsTakenSingle * 1000.0f;
+        double numSecondsProcessed = (ended - started) / (float)(CLOCKS_PER_SEC);
+        double MilliSecondsTakenSingle = numSecondsProcessed * 1000.0f;
         double MilliSecondsTakenMT = ((tv_end.tv_sec - tv_start.tv_sec) * 1000.0f + (tv_end.tv_usec - tv_start.tv_usec) / 1000.0f);
         printf("\n======================"
                "\n%d Frames (%.1f fps)"
@@ -425,8 +433,8 @@ int main(int argc, char **argv)
                "\n%.3fx (single core); "
                "\n%.3fx (multi core); "
                "\n======================\n\n",
-               numFramesProcessed, numFramesProcessed / numSecondsProcessed,
-               MilliSecondsTakenSingle / numFramesProcessed,
+               numFramesProcessed, (float)numFramesProcessed / numSecondsProcessed,
+               MilliSecondsTakenSingle / (float)numFramesProcessed,
                MilliSecondsTakenMT / (float)numFramesProcessed,
                1000 / (MilliSecondsTakenSingle / numSecondsProcessed),
                1000 / (MilliSecondsTakenMT / numSecondsProcessed));

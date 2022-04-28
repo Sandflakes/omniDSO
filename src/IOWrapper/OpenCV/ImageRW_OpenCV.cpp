@@ -124,6 +124,25 @@ namespace dso
             return img;
         }
 
+        MinimalImageB* mat2MinimalBW_8U(cv::Mat m)
+        {
+            
+            cv::cvtColor(m, m, cv::COLOR_BGR2GRAY);
+            if (m.rows * m.cols == 0)
+            {
+                printf("cv::VideoCapture could not read webcam!\n");
+                return 0;
+            }
+            if (m.type() != CV_8U)
+            {
+                printf("cv::VideoCapture has the wrong image format: %i\n", m.type());
+                return 0;
+            }
+            MinimalImageB *img = new MinimalImageB(m.cols, m.rows);
+            memcpy(img->data, m.data, m.rows * m.cols);
+            return img;
+        }
+
         void writeImage(std::string filename, MinimalImageB *img)
         {
             cv::imwrite(filename, cv::Mat(img->h, img->w, CV_8U, img->data));

@@ -131,7 +131,7 @@ namespace dso
 	{
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-		FullSystem();
+		FullSystem(int camId = 0);
 		virtual ~FullSystem();
 
 		// adds a new frame, and creates point & residual structs.
@@ -156,6 +156,8 @@ namespace dso
 		bool initFailed;
 		bool initialized;
 		bool linearizeOperation;
+
+		int camId;
 
 		void setGammaFunction(float *BInv);
 		void setOriginalCalib(const VecXf &originalCalib, int originalW, int originalH);
@@ -252,7 +254,7 @@ namespace dso
 		PixelSelector *pixelSelector;
 		CoarseDistanceMap *coarseDistanceMap;
 
-		std::vector<FrameHessian *> frameHessians; // ONLY changed in marginalizeFrame and addFrame.
+		std::vector<FrameHessian *> frameHessians; // Vector of all active frames. ONLY changed in marginalizeFrame and addFrame.
 		std::vector<PointFrameResidual *> activeResiduals;
 		float currentMinActDist;
 

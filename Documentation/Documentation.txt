@@ -1,0 +1,26 @@
+-- Connect to the raspberry pi
+	ssh pi@brains.local (for rpi)
+	ssh pi@jnano.local (for jetson nano)
+	user: pi
+	Pwd:  pi
+
+-- VNC Startup https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-20-04
+	1. ssh in to the pi
+	2. run "vncserver"
+	3. Start the ssh tunnel on the host
+		ssh -L 5901:127.0.0.1:5901 -N -f -l pi brains.local
+
+-- Build 64-bit drivers
+	Git repo - https://github.com/ArduCAM/Arducam_OBISP_MIPI_Camera_Module
+	Edit buildfile using following - https://www.raspberrypi.com/documentation/computers/linux_kernel.html
+
+-- Install OpenCV
+	Tutorial - https://qengineering.eu/install-opencv-4.5-on-raspberry-pi-4.html
+	Link for 64-bit - https://raw.githubusercontent.com/Qengineering/Install-OpenCV-Raspberry-Pi-64-bits/main/OpenCV-4-5-5.sh
+
+
+
+-- Run multi-DSO
+	./dso_multi /home/sandflakes/Documents/Git/omniDSO/build/bin/dso_multi -c=/home/sandflakes/Pictures/Dataset/00/ -mode=2
+	
+	matlab -softwareopengl

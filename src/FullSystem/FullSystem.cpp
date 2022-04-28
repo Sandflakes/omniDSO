@@ -61,7 +61,7 @@ namespace dso
 	int PointHessian::instanceCounter = 0;
 	int CalibHessian::instanceCounter = 0;
 
-	FullSystem::FullSystem()
+	FullSystem::FullSystem(int camId)
 	{
 
 		int retstat = 0;
@@ -163,6 +163,8 @@ namespace dso
 		maxIdJetVisDebug = -1;
 		minIdJetVisTracker = -1;
 		maxIdJetVisTracker = -1;
+
+		this->camId = camId;
 	}
 
 	FullSystem::~FullSystem()
@@ -772,6 +774,7 @@ namespace dso
 		shell->marginalizedAt = shell->id = allFrameHistory.size();
 		shell->timestamp = image->timestamp;
 		shell->incoming_id = id;
+		shell->camId = this->camId;
 		fh->shell = shell;
 		allFrameHistory.push_back(shell);
 
@@ -922,7 +925,7 @@ namespace dso
 			if (unmappedTrackedFrames.size() > 3)
 				needToKetchupMapping = true;
 
-			if (unmappedTrackedFrames.size() > 0) // if there are other frames to tracke, do that first.
+			if (unmappedTrackedFrames.size() > 0) // if there are other frames to track, do that first.
 			{
 				lock.unlock();
 				makeNonKeyFrame(fh);

@@ -1,0 +1,3 @@
+-Questions
+	-- All cameras in the same coordinate system or make a transformation to a global space 		   for each camera
+	-- How do I synchronise the cameras, voter between cameras

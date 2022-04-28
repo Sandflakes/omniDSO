@@ -38,6 +38,7 @@ namespace dso
 
         MinimalImageB *readStreamBW_8U(char *data, int numBytes);
         MinimalImageB *readWebcamBW_8U(cv::VideoCapture* camera);
+        MinimalImageB* mat2MinimalBW_8U(cv::Mat m);
 
         void writeImage(std::string filename, MinimalImageB *img);
         void writeImage(std::string filename, MinimalImageB3 *img);

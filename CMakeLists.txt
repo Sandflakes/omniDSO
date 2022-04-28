@@ -54,6 +54,8 @@ set(dso_SOURCE_FILES
   ${PROJECT_SOURCE_DIR}/src/util/Undistort.cpp
   ${PROJECT_SOURCE_DIR}/src/util/globalCalib.cpp
   ${PROJECT_SOURCE_DIR}/src/util/webcamReader.cpp
+  ${PROJECT_SOURCE_DIR}/src/util/datasetReaderCV.cpp
+  ${PROJECT_SOURCE_DIR}/src/IOWrapper/OutputWrapper/multiOutputWrapper.cpp
 )
 
 
@@ -124,21 +126,22 @@ endif()
 
 # build main executable (only if we have both OpenCV and Pangolin)
 if (OpenCV_FOUND AND Pangolin_FOUND)
-	message("--- compiling dso_dataset and dso_multi")
-	add_executable(dso_dataset ${PROJECT_SOURCE_DIR}/src/main_dso_pangolin.cpp )
-    target_link_libraries(dso_dataset dso boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS})
+	# message("--- compiling dso_dataset")
+	# add_executable(dso_dataset ${PROJECT_SOURCE_DIR}/src/main_dso_pangolin.cpp )
+    # target_link_libraries(dso_dataset dso boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS})
 	
+	message("--- compiling dso_multi")
 	add_executable(dso_multi ${PROJECT_SOURCE_DIR}/src/main_dso_multi.cpp )
     target_link_libraries(dso_multi dso boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS})
 else()
 	message("--- not building dso_dataset, since either don't have openCV or Pangolin.")
 endif()
 
-# build omni main executable (only if we have both OpenCV)
-if (OpenCV_FOUND)
-	message("--- compiling omniDSO.")
-	add_executable(dso_omni ${PROJECT_SOURCE_DIR}/src/main_dso_omni.cpp )
-    target_link_libraries(dso_omni dso boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS})
-else()
-	message("--- not building omniDSO, since it does not have openCV.")
-endif()
+# # build omni main executable (only if we have both OpenCV)
+# if (OpenCV_FOUND)
+# 	message("--- compiling omniDSO.")
+# 	add_executable(dso_omni ${PROJECT_SOURCE_DIR}/src/main_dso_omni.cpp )
+#     target_link_libraries(dso_omni dso boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS})
+# else()
+# 	message("--- not building omniDSO, since it does not have openCV.")
+# endif()
